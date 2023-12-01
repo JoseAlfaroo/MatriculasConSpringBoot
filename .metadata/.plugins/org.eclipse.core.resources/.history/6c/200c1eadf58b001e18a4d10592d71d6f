@@ -1,0 +1,13 @@
+package com.wazaaa.joq.Auth;
+
+import java.util.HashMap;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+@Service
+public class JwtService {
+	public String getToken(UserDetails user) {
+		return getToken(new HashMap<>(), user);
+	}
+}

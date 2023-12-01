@@ -1,0 +1,57 @@
+package com.wazaaa.joq.services;
+
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.repositories.UsuarioRepository;
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+	private UsuarioRepository usuarioRepository;
+	
+	public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
+		this.usuarioRepository = usuarioRepository;
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		
+		Usuario usuario = usuarioRepository.findUsuarioByEmail(email);
+		
+		if(usuario == null) {
+
+			throw new UsernameNotFoundException("Usuario no encontrado");
+		}
+		System.out.println("Rol del usuario: " + usuario.getRol());
+		
+	    String redirectUrl = "/";
+	    
+	    if ("USUARIO".equals(usuario.getRol())) {
+	        redirectUrl = "/usuario/";
+	    } else if ("ADMINISTRADOR".equals(usuario.getRol())) {
+	        redirectUrl = "/administrador/";
+	    }
+		
+		List<String> roles = Arrays.asList(usuario.getRol());
+		UserDetails userDetails =
+                org.springframework.security.core.userdetails.User.builder()
+                        .username(usuario.getEmail())
+                        .password(usuario.getPassword())
+                        .roles("USUARIO")
+                        .build();
+		
+		return userDetails;
+	}
+	
+	
+
+
+}

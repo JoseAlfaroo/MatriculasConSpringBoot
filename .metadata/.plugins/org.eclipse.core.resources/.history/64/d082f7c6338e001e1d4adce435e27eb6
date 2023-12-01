@@ -1,0 +1,29 @@
+package com.wazaaa.joq.controllers;
+
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wazaaa.joq.interfaceservices.InterfaceDocenteService;
+import com.wazaaa.joq.models.Docente;
+
+@Controller
+@RequestMapping
+public class DocenteController {
+	
+	@Autowired
+	private InterfaceDocenteService interfaceDocenteService;
+	
+	@GetMapping("administrador/docentes")
+	public String listarDocente(Model model) {
+		List<Docente> docentes = interfaceDocenteService.listarDocente();
+		//Aquí -> addAtribute("nombre de la variable en pagina web", variable interna)
+		model.addAttribute("docentes", docentes);
+		return "docentes";
+	}
+	
+}

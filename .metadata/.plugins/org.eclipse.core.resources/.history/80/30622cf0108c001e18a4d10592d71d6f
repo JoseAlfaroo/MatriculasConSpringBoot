@@ -1,0 +1,8 @@
+package com.wazaaa.joq.Usuario;
+
+
+public enum Rol {
+	ADMIN,
+	USER
+}
+

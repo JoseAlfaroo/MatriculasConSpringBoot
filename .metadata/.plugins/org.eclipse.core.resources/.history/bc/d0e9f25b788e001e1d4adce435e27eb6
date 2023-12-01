@@ -1,0 +1,8 @@
+package com.wazaaa.joq.interfaces;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface InterfaceRetiro {
+	
+}

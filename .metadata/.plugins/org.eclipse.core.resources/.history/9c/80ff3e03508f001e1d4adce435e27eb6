@@ -1,0 +1,161 @@
+package com.wazaaa.joq.controllers;
+
+import com.lowagie.text.DocumentException;
+import com.wazaaa.joq.interfaceservices.InterfaceCursoService;
+import com.wazaaa.joq.interfaceservices.InterfaceMatriculaService;
+import com.wazaaa.joq.interfaceservices.InterfaceRetiroService;
+import com.wazaaa.joq.models.Curso;
+import com.wazaaa.joq.models.Matricula;
+import com.wazaaa.joq.models.Retiro;
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.reports.MatriculasExporterPDF;
+import com.wazaaa.joq.services.UserService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+@Controller
+@RequestMapping
+public class MatriculaController {
+    private final InterfaceMatriculaService interfaceMatriculaService;
+    private final InterfaceCursoService interfaceCursoService;
+    private final UserService userService;
+    private final InterfaceRetiroService interfaceRetiroService;
+
+
+    public MatriculaController(
+            InterfaceMatriculaService interfaceMatriculaService,
+            InterfaceCursoService interfaceCursoService,
+            UserService userService, InterfaceRetiroService interfaceRetiroService) {
+        this.interfaceMatriculaService = interfaceMatriculaService;
+        this.interfaceCursoService = interfaceCursoService;
+        this.userService = userService;
+		this.interfaceRetiroService = interfaceRetiroService;
+    }
+
+    @GetMapping("/usuario/matriculas")
+    public String listarMatricula(Model model) {
+        List<Matricula> matriculas = interfaceMatriculaService.listarMatricula();
+        List<Curso> cursos = interfaceCursoService.listarCurso();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario usuario = userService.getUserByEmail(username);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("matriculas", matriculas);
+        return "matriculas";
+    }
+
+    @GetMapping("/usuario/matriculas/nuevaMatricula")
+    public String agregarMatricula(Model model) {
+        LocalDate fechaActual = LocalDate.now();
+        String fechaFormateada = fechaActual.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        List<Curso> cursos = interfaceCursoService.listarCurso();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario usuario = userService.getUserByEmail(username);
+
+        // Crear una nueva matrícula
+        Matricula matricula = new Matricula();
+        matricula.setUsuario(usuario);
+        matricula.setFecha(fechaActual);
+        matricula.setEstado("Activa");
+
+        model.addAttribute("tit", "Registrar nueva matrícula");
+        model.addAttribute("colortit", "bg-info-subtle");
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("matricula", matricula);
+
+        System.out.println(fechaFormateada);
+
+        return "formMatriculas";
+    }
+
+    @PostMapping("/usuario/matriculas/guardar")
+    public String guardar(@ModelAttribute Matricula m, Model model) {
+        interfaceMatriculaService.guardarMatricula(m);
+        return "redirect:/usuario/matriculas";
+    }
+
+    
+    @PostMapping("/usuario/matriculas/retirar")
+    public String retirarMatricula(@RequestParam("matriculaId") int matriculaId) {
+
+        // Aquí obtiene la matrícula a través del id usando Optional
+        Optional<Matricula> optionalMatricula = interfaceMatriculaService.listarMatriculaPorId(matriculaId);
+        
+        if (optionalMatricula.isPresent()) {
+            Matricula matricula = optionalMatricula.get();
+            
+            // Cambia el estado de la matrícula
+            matricula.setEstado("Retirada");
+            interfaceMatriculaService.guardarMatricula(matricula);
+
+            // Registra el retiro
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            Usuario usuario = userService.getUserByEmail(username);
+
+            Retiro retiro = new Retiro();
+            retiro.setUsuario(usuario);
+            retiro.setMatricula(matricula);
+            
+            LocalDate fechaActual = LocalDate.now();
+            String fechaFormateada = fechaActual.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            retiro.setFecha(fechaFormateada);
+
+            interfaceRetiroService.guardarRetiro(retiro);
+        }
+
+        return "redirect:/usuario/matriculas";
+    }
+
+    @GetMapping("/usuario/matriculas/exportarMatriculasPDF")
+    public void exportarListadoDeMatriculasActivasEnPDF(HttpServletResponse response) throws DocumentException, IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario usuario = userService.getUserByEmail(username);
+    	
+    	response.setContentType("application/pdf");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String fechaActual = dateFormatter.format(new Date());
+        String cabecera = "Content-Disposition";
+        String valor = "attachment; filename=EscuelaGlobal_MatriculasActivas_" + usuario.getNombres() + "_" + usuario.getApellidos() + "_" + fechaActual + ".pdf";
+        response.setHeader(cabecera, valor);
+        List<Matricula> matriculas = interfaceMatriculaService.listarMatricula();
+        MatriculasExporterPDF exporter = new MatriculasExporterPDF(matriculas, userService);
+        exporter.exportarMatriculas(response);
+    }
+    
+    @GetMapping("/usuario/matriculas/exportarTodasMatriculasPDF")
+    public void exportarListadoDeTodasMatriculasEnPDF(HttpServletResponse response) throws DocumentException, IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario usuario = userService.getUserByEmail(username);
+    	
+    	response.setContentType("application/pdf");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String fechaActual = dateFormatter.format(new Date());
+        String cabecera = "Content-Disposition";
+        String valor = "attachment; filename=EscuelaGlobal_Matriculas_" + usuario.getNombres() + "_" + usuario.getApellidos() + "_" + fechaActual + ".pdf";
+        response.setHeader(cabecera, valor);
+        List<Matricula> matriculas = interfaceMatriculaService.listarMatricula();
+        MatriculasExporterPDF exporter = new MatriculasExporterPDF(matriculas, userService);
+        exporter.exportarMatriculas(response);
+    }
+    
+}

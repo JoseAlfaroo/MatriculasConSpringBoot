@@ -1,0 +1,5 @@
+package com.wazaaa.joq.config;
+
+public class SecurityConfig {
+
+}

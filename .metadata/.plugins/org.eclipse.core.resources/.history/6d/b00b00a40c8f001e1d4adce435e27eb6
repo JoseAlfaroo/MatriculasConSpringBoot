@@ -1,0 +1,111 @@
+package com.wazaaa.joq.reports;
+
+import java.awt.Color;
+import java.io.IOException;
+import java.util.List;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import com.wazaaa.joq.models.Usuario;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+public class AlumnosExporterPDF {
+    private List<Usuario> listaAlumnos;
+
+    public AlumnosExporterPDF(List<Usuario> listaAlumnos) {
+        this.listaAlumnos = listaAlumnos;
+    }
+
+    private void escribirCabeceraDeLaTabla(PdfPTable tabla) {
+        PdfPCell celda = new PdfPCell();
+
+        // Estilos de celdas
+        celda.setBackgroundColor(Color.DARK_GRAY);
+        celda.setPadding(5);
+
+        // Fuente y color
+        Font fuente = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+        fuente.setColor(Color.WHITE);
+
+        // Titulos de cabecera
+        celda.setPhrase(new Phrase("ID", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+
+        celda.setPhrase(new Phrase("Nombres", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+
+        celda.setPhrase(new Phrase("Apellidos", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+
+        celda.setPhrase(new Phrase("Correo", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+
+
+    }
+
+    private PdfPCell centrarCelda(String contenido) {
+        PdfPCell celda = new PdfPCell(new Phrase(contenido));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        return celda;
+    }
+
+    private void escribirDatosDeLaTabla(PdfPTable tabla) {
+
+        for (Usuario alumno : listaAlumnos) {
+            // Condicion pa que se muestren solo los usuarios de rol "USUARIO" en el PDF, es decir, los alumnos
+            if ("USUARIO".equals(alumno.getRol())) {
+                tabla.addCell(centrarCelda(String.valueOf(alumno.getId())));
+                tabla.addCell(centrarCelda(alumno.getNombres()));
+                tabla.addCell(centrarCelda(alumno.getApellidos()));
+                tabla.addCell(centrarCelda(alumno.getEmail()));
+            }
+        }
+
+    }
+
+    public void exportarAlumnos(HttpServletResponse response) throws DocumentException, IOException {
+        Document documento = new Document();
+        PdfWriter.getInstance(documento, response.getOutputStream());
+
+        documento.open();
+
+        Font fuente = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+        fuente.setStyle(Font.UNDERLINE);
+        fuente.setColor(Color.BLACK);
+        fuente.setSize(18);
+
+        Paragraph titulo = new Paragraph("Lista de Alumnos", fuente);
+        titulo.setAlignment(Paragraph.ALIGN_CENTER);
+        documento.add(titulo);
+
+        PdfPTable tabla = new PdfPTable(4);
+        tabla.setWidthPercentage(100);
+        tabla.setSpacingBefore(15);
+
+        tabla.setWidths(new float[] { 4f, 5f, 5f, 6f });
+        tabla.setWidthPercentage(110);
+
+        escribirCabeceraDeLaTabla(tabla);
+        escribirDatosDeLaTabla(tabla);
+
+        documento.add(tabla);
+        documento.close();
+    }
+}

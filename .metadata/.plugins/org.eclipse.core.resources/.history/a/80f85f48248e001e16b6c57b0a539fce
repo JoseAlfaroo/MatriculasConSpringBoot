@@ -1,0 +1,32 @@
+package com.wazaaa.joq.services;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.wazaaa.joq.interfaces.InterfaceDocente;
+import com.wazaaa.joq.interfaceservices.InterfaceDocenteService;
+import com.wazaaa.joq.models.Docente;
+
+public class DocenteService implements InterfaceDocenteService {
+
+	private InterfaceDocente data;
+	
+	@Override
+	public List<Docente> listarDocente() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Optional<Docente> listarId(int id) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+	@Override
+	public int guardarDocente(Docente d) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

@@ -1,0 +1,9 @@
+package com.wazaaa.joq.reports;
+
+import java.util.List;
+
+import com.wazaaa.joq.models.Retiro;
+
+public class RetirosExporterPDF {
+	private List<Retiro> listaRetiros;
+}

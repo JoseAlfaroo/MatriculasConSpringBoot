@@ -1,0 +1,57 @@
+package com.wazaaa.joq.controllers;
+
+import java.util.List;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wazaaa.joq.interfaceservices.InterfaceCursoService;
+import com.wazaaa.joq.interfaceservices.InterfaceMatriculaService;
+import com.wazaaa.joq.interfaceservices.InterfaceRetiroService;
+import com.wazaaa.joq.models.Curso;
+import com.wazaaa.joq.models.Matricula;
+import com.wazaaa.joq.models.Retiro;
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.services.UserService;
+
+@Controller
+@RequestMapping
+public class RetiroController {
+
+    private final InterfaceMatriculaService interfaceMatriculaService;
+    private final InterfaceCursoService interfaceCursoService;
+    private final UserService userService;
+    private final InterfaceRetiroService interfaceRetiroService;
+	
+    public RetiroController(
+            InterfaceMatriculaService interfaceMatriculaService,
+            InterfaceCursoService interfaceCursoService,
+            UserService userService, InterfaceRetiroService interfaceRetiroService) {
+        this.interfaceMatriculaService = interfaceMatriculaService;
+        this.interfaceCursoService = interfaceCursoService;
+        this.userService = userService;
+		this.interfaceRetiroService = interfaceRetiroService;
+    }
+	
+    @GetMapping("/usuario/retiros")
+    public String listarRetiro(Model model) {
+    	List<Retiro> retiros = interfaceRetiroService.listarRetiro();
+        List<Matricula> matriculas = interfaceMatriculaService.listarMatricula();
+        List<Curso> cursos = interfaceCursoService.listarCurso();
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario usuario = userService.getUserByEmail(username);
+        
+        model.addAttribute("retiros", retiros);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("matriculas", matriculas);
+        return "retiros";
+    }
+	
+}

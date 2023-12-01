@@ -1,0 +1,13 @@
+package com.wazaaa.joq.interfaceservices;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.wazaaa.joq.models.Retiro;
+
+public interface InterfaceRetiroService {
+	public List<Retiro> listarDocente();
+	public Optional<Retiro> listarDocentePorId(int id);
+	public int guardarDocente(Retiro d);
+	public void eliminarDocente(int id);
+}

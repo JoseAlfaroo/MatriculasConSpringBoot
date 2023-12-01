@@ -1,0 +1,8 @@
+package com.wazaaa.joq.seguridad;
+
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SeguridadConfig {
+
+}

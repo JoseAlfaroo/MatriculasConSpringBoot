@@ -1,0 +1,96 @@
+package com.wazaaa.joq.reports;
+
+import java.awt.Color;
+import java.util.List;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.wazaaa.joq.models.Matricula;
+import com.wazaaa.joq.models.Retiro;
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.services.UserService;
+
+public class RetirosExporterPDF {
+	private List<Retiro> listaRetiros;
+	private final UserService userService;
+	
+	public RetirosExporterPDF(List<Retiro> listaRetiros, UserService userService) {
+		this.listaRetiros = listaRetiros;
+		this.userService = userService;
+	}
+	
+	private void escribirCabeceraDeLaTabla(PdfPTable tabla) {
+		PdfPCell celda = new PdfPCell();
+		
+		//Estilos de celdas
+		celda.setBackgroundColor(Color.DARK_GRAY);
+		celda.setPadding(5);
+		
+		//Fuente y color
+		Font fuente = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+		fuente.setColor(Color.WHITE);
+		
+		//Titulos de cabecera
+		celda.setPhrase(new Phrase("ID", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+		celda.setPhrase(new Phrase("Alumno", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+		celda.setPhrase(new Phrase("Matrícula retirada (ID / Curso)", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+		celda.setPhrase(new Phrase("Fecha de retiro", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+        
+		
+	}
+	
+    private PdfPCell centrarCelda(String contenido) {
+        PdfPCell celda = new PdfPCell(new Phrase(contenido));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        return celda;
+    }
+    
+    
+	private void escribirDatosDeLaTablaRetiros(PdfPTable tabla) {
+		
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario usuario = userService.getUserByEmail(username);
+		
+        
+		for(Retiro retiro : listaRetiros) {
+
+			if(retiro.getUsuario().getId() == usuario.getId()) {
+				tabla.addCell(centrarCelda(String.valueOf(retiro.getId())));
+				tabla.addCell(centrarCelda(String.valueOf(retiro.getUsuario().getNombres() + " " + retiro.getUsuario().getApellidos())));
+				tabla.addCell(centrarCelda(String.valueOf(retiro.getMatricula().getCurso().getNombres())));
+				tabla.addCell(centrarCelda(String.valueOf(retiro.getFecha())));
+			}
+			
+
+		}
+		
+	}
+	
+	
+	
+	
+	
+}

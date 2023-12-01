@@ -1,0 +1,28 @@
+package com.wazaaa.joq.Auth;
+
+import org.springframework.stereotype.Service;
+
+import com.wazaaa.joq.Usuario.Rol;
+import com.wazaaa.joq.Usuario.Usuario;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+	
+	public AuthResponse login(LoginRequest request) {
+		return null;
+	}
+	
+	public AuthResponse register(RegisterRequest request) {
+		Usuario user = Usuario.builder()
+				.username(request.getUsername())
+				.password(request.getPassword())
+				.firstname(request.getNombre())
+				.lastname(request.getApellido())
+				.rol(Rol.USER)
+				.build();
+	}
+	
+}

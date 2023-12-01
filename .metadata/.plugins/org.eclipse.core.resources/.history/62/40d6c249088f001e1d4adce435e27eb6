@@ -1,0 +1,105 @@
+package com.wazaaa.joq.controllers;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.lowagie.text.DocumentException;
+import com.wazaaa.joq.interfaceservices.InterfaceUsuarioService;
+import com.wazaaa.joq.models.Docente;
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.reports.AlumnosExporterPDF;
+
+import com.wazaaa.joq.services.UserService;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Controller
+@RequestMapping
+public class UsuarioController {
+	
+	@Autowired
+	private InterfaceUsuarioService interfaceUsuarioService;
+	private final UserService userService;
+	
+	public UsuarioController(UserService userService) {
+		this.userService = userService;
+	}
+	
+	
+	@GetMapping("/administrador/alumnos")
+	public String listarUsuarios(Model model) {
+		List<Usuario> usuarios = interfaceUsuarioService.listarUsuario();
+		
+		/*Datos de usuario autenticado*/
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Usuario usuario = userService.getUserByEmail(username);
+		
+		//Aquí -> addAtribute("nombre de la variable en pagina web", variable interna)
+		model.addAttribute("usuario", usuario);
+		model.addAttribute("usuarios", usuarios);
+		return "alumnos";
+	}
+	
+	
+	@GetMapping("/administrador/alumnos/editar/{id}")
+	public String editar(@PathVariable int id, Model model) {
+		
+		/*Datos de usuario autenticado*/
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		Usuario usuario = userService.getUserByEmail(username);
+		
+		//Aquí -> addAtribute("nombre de la variable en pagina web", variable interna)
+		model.addAttribute("tit", "Modificar alumno");
+		model.addAttribute("colortit", "bg-warning-subtle");
+		model.addAttribute("usuario", usuario);
+		
+	    Optional<Usuario> alumno = interfaceUsuarioService.listarUsuarioPorId(id);
+	    
+	    model.addAttribute("alumno", alumno);
+	    return "formAlumnos";
+	}
+	
+	
+	@PostMapping("/administrador/alumnos/guardar")
+	public String guardar(Usuario u, Model model) {
+		interfaceUsuarioService.guardarUsuario(u);
+		return "redirect:/administrador/alumnos";
+	}
+	
+	
+	
+	@GetMapping("/administrador/alumnos/exportarAlumnosPDF")
+	public void exportarListadoDeAlumnosEnPDF(HttpServletResponse response) throws DocumentException, IOException {
+		response.setContentType("application/pdf");
+		
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String fechaActual = dateFormatter.format(new Date());
+		
+		String cabecera = "Content-Disposition";
+		String valor = "attachment; filename=Joq_Alumnos_" + fechaActual + ".pdf";
+		
+		response.setHeader(cabecera, valor);
+		
+		List<Usuario> alumnos = interfaceUsuarioService.listarUsuario();
+		
+		AlumnosExporterPDF exporter = new AlumnosExporterPDF(alumnos);
+		exporter.exportarAlumnos(response);
+	}
+	
+}

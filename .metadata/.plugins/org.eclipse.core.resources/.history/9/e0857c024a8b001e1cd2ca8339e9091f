@@ -1,0 +1,30 @@
+package com.wazaaa.joq.models;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "usuario")
+@Data
+@NoArgsConstructor
+public class Usuario {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	private String nombre;
+	private String apellido;
+	private String username;
+	private String email;
+	private String password;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "rol_usuario", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "id_rol", referencedColumnName = "id"))
+	
+	private List<Rol> roles = new ArrayList<>();
+}

@@ -1,0 +1,42 @@
+package com.wazaaa.joq.services;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.wazaaa.joq.interfaces.InterfaceUsuario;
+import com.wazaaa.joq.interfaceservices.InterfaceUsuarioService;
+import com.wazaaa.joq.models.Usuario;
+
+@Service
+public class UsuarioService implements InterfaceUsuarioService {
+	
+	@Autowired
+	private InterfaceUsuario data;
+
+	@Override
+	public List<Usuario> listarUsuario() {
+		// TODO Auto-generated method stub
+		return (List<Usuario>) data.findAll();
+	}
+
+	@Override
+	public Optional<Usuario> listarUsuarioPorId(int id) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+	@Override
+	public int guardarUsuario(Usuario d) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void eliminarUsuario(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+}

@@ -1,0 +1,14 @@
+package com.wazaaa.joq.controllers;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wazaaa.joq.interfaceservices.InterfaceMatriculaService;
+
+@Controller
+@RequestMapping
+public class MatriculaController {
+	public InterfaceMatriculaService interfaceMatriculaService;
+	
+	
+}

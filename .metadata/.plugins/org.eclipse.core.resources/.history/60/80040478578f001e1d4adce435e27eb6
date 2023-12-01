@@ -1,0 +1,16 @@
+package com.wazaaa.joq.reports;
+
+import java.util.List;
+
+import com.wazaaa.joq.models.Retiro;
+import com.wazaaa.joq.services.UserService;
+
+public class RetirosExporterPDF {
+	private List<Retiro> listaRetiros;
+	private final UserService userService;
+	
+	public RetirosExporterPDF(List<Retiro> listaRetiros, UserService userService) {
+		this.listaRetiros = listaRetiros;
+		this.userService = userService;
+	}
+}

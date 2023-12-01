@@ -1,0 +1,5 @@
+package com.wazaaa.joq.Auth;
+
+public class AuthResponse {
+
+}

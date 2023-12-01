@@ -1,0 +1,26 @@
+package com.wazaaa.joq.controllers;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class HomeController {
+
+    @ResponseBody
+    @GetMapping({"/usuario/"})
+    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    public String usuario(){
+        return "usuario";
+    }
+    
+    @ResponseBody
+    @GetMapping({"/administrador/"})
+    @PreAuthorize("hasRole('ROLE_ADMINISTRADOR')")
+    public String administrador(){
+        return "administrador";
+    }
+}

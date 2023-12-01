@@ -1,0 +1,12 @@
+package com.wazaaa.joq.repositories;
+
+import org.springframework.stereotype.Repository;
+
+import com.wazaaa.joq.models.Usuario;
+
+@Repository
+public class UsuarioRepository {
+    public Usuario findUserByEmail(String email){
+        return new Usuario( email, "josejose", "Jose", "Alfaro");
+    }
+}

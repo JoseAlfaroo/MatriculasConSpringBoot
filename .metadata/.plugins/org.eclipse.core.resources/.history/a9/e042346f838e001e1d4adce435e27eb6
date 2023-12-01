@@ -1,0 +1,18 @@
+package com.wazaaa.joq.controllers;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wazaaa.joq.interfaceservices.InterfaceCursoService;
+
+@Controller
+@RequestMapping("")
+public class CursoController {
+	private InterfaceCursoService interfaceCursoService;
+
+	public CursoController(InterfaceCursoService interfaceCursoService) {
+		this.interfaceCursoService = interfaceCursoService;
+	}
+	
+	
+}

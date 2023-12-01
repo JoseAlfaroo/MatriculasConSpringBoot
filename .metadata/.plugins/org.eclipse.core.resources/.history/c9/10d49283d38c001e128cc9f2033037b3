@@ -1,0 +1,19 @@
+package com.wazaaa.joq.services;
+
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.repositories.UsuarioRepository;
+
+public class UserService {
+	
+	private final UsuarioRepository usuarioRepository;
+	
+	public UserService(UsuarioRepository usuarioRepository) {
+		this.usuarioRepository = usuarioRepository;
+	}
+	
+	public Usuario getUserByEmail(String email) {
+		Usuario usuario = usuarioRepository.findUsuarioByEmail(email);
+		return usuario;
+	}
+	
+}

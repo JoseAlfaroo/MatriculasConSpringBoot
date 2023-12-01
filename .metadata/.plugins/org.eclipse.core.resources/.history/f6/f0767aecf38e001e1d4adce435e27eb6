@@ -1,0 +1,5 @@
+package com.wazaaa.joq.interfaceservices;
+
+public interface InterfaceAlumnoService {
+
+}

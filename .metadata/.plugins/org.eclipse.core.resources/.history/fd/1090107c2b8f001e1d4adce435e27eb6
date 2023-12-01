@@ -1,0 +1,22 @@
+package com.wazaaa.joq.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wazaaa.joq.interfaceservices.InterfaceMatriculaService;
+import com.wazaaa.joq.services.UserService;
+
+@Controller
+@RequestMapping
+public class MatriculaController {
+	@Autowired
+	public InterfaceMatriculaService interfaceMatriculaService;
+	private final UserService userService;
+	
+	
+	public MatriculaController(UserService userService) {
+		this.userService = userService;
+	}
+	
+}

@@ -1,0 +1,43 @@
+package com.wazaaa.joq.services;
+
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.wazaaa.joq.models.Usuario;
+import com.wazaaa.joq.repositories.UsuarioRepository;
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+	private UsuarioRepository usuarioRepository;
+	
+	public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
+		this.usuarioRepository = usuarioRepository;
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		
+		Usuario usuario = usuarioRepository.findUsuarioByEmail(email);
+		
+		List<String> roles = Arrays.asList(usuario.getRol());
+		UserDetails userDetails =
+                org.springframework.security.core.userdetails.User.builder()
+                        .username(usuario.getEmail())
+                        .password(usuario.getPassword())
+                        .roles("USER")
+                        .build();
+		
+		return userDetails;
+	}
+	
+	
+
+
+}

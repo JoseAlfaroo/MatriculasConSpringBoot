@@ -1,0 +1,5 @@
+package com.wazaaa.joq.services;
+
+public class UserService {
+
+}

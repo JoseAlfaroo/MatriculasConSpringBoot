@@ -1,0 +1,14 @@
+package com.wazaaa.joq.interfaceservices;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.wazaaa.joq.models.Curso;
+import com.wazaaa.joq.models.Docente;
+
+public interface InterfaceCursoService {
+	public List<Curso> listarCurso();
+	public Optional<Curso> listarCursoPorId(int id);
+	public int guardarCurso(Docente d);
+	public void eliminarCurso(int id);
+}

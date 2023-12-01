@@ -1,0 +1,23 @@
+package com.wazaaa.joq.controllers;
+
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wazaaa.joq.interfaceservices.InterfaceDocenteService;
+
+@Controller
+@RequestMapping
+public class DocenteController {
+	
+	@Autowired
+	private InterfaceDocenteService interfaceDocenteService;
+	
+	public String listarDocente(Model model) {
+		List<E>
+	}
+	
+}

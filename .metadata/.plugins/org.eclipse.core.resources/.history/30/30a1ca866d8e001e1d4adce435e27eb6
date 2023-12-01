@@ -1,0 +1,105 @@
+package com.wazaaa.joq.reports;
+
+import java.util.List;
+
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.wazaaa.joq.models.Docente;
+
+public class DocentesExporterPDF {
+	private List<Docente> listaDocentes;
+
+	public DocentesExporterPDF(List<Docente> listaDocentes) {
+		super();
+		this.listaDocentes = listaDocentes;
+	}
+	
+	private void escribirCabeceraDeLaTabla(PdfPTable tabla) {
+		PdfPCell celda = new PdfPCell();
+		
+		//Estilos de celdas
+		celda.setBackgroundColor(Color.DARK_GRAY);
+		celda.setPadding(5);
+		
+		//Fuente y color
+		Font fuente = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+		fuente.setColor(Color.WHITE);
+		
+		//Titulos de cabecera
+		celda.setPhrase(new Phrase("ID", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+		celda.setPhrase(new Phrase("Nombre", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+		celda.setPhrase(new Phrase("Apellido", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+		celda.setPhrase(new Phrase("Teléfono", fuente));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        tabla.addCell(celda);
+		
+	}
+	
+    private PdfPCell centrarCelda(String contenido) {
+        PdfPCell celda = new PdfPCell(new Phrase(contenido));
+        celda.setHorizontalAlignment(Phrase.ALIGN_CENTER);
+        celda.setVerticalAlignment(Phrase.ALIGN_MIDDLE);
+        return celda;
+    }
+	
+	private void escribirDatosDeLaTabla(PdfPTable tabla) {
+		
+		for(Persona persona : listaPersonas) {
+
+			tabla.addCell(centrarCelda(String.valueOf(persona.getId())));
+			tabla.addCell(centrarCelda(persona.getNombre()));
+			tabla.addCell(centrarCelda(persona.getApellido()));
+			tabla.addCell(centrarCelda(persona.getTelefono()));
+		}
+		
+	}
+	
+	public void exportar(HttpServletResponse response) throws DocumentException, IOException {
+		Document documento = new Document(PageSize.A4);
+		PdfWriter.getInstance(documento, response.getOutputStream());
+		
+		documento.open();
+		
+		Font fuente = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+		fuente.setStyle(Font.UNDERLINE);
+		fuente.setColor(Color.BLACK);
+		fuente.setSize(18);
+		
+		Paragraph titulo = new Paragraph("Lista de Personas", fuente);
+		titulo.setAlignment(Paragraph.ALIGN_CENTER);
+		documento.add(titulo);
+		
+		PdfPTable tabla = new PdfPTable(4);
+		tabla.setWidthPercentage(100);
+		tabla.setSpacingBefore(15);
+		
+		
+		tabla.setWidths(new float[] {2f, 7f, 7f, 4f});
+		tabla.setWidthPercentage(110);
+		
+		
+		escribirCabeceraDeLaTabla(tabla);
+		escribirDatosDeLaTabla(tabla);
+		
+		documento.add(tabla);
+		documento.close();
+		
+	}
+	
+}
+
+	
+}
