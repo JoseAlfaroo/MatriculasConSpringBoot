@@ -1,0 +1,49 @@
+CREATE DATABASE LP2_ProyectoFinal;
+
+USE LP2_ProyectoFinal;
+
+CREATE TABLE IF NOT EXISTS usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    nombres VARCHAR(255),
+    apellidos VARCHAR(255),
+    rol VARCHAR(255)
+);
+
+INSERT INTO usuario (email, password, nombres, apellidos, rol) VALUES ('already.5.35@gmail.com', '$2a$10$i7rNlgs2YVmHhBetU99nF.0tFmzUfS1K.yLUo4NHzqxLIFPj9Mlri', 'Jose', 'Alfaro', 'ADMINISTRADOR');
+-- CONTRASEÑA ENCRIPTADA: '12345678'
+
+
+CREATE TABLE IF NOT EXISTS docente(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombres VARCHAR(255),
+    apellidos VARCHAR(255),
+    telefono VARCHAR(255),
+    correo VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS curso(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idDocente INT REFERENCES docente(id),
+    nombres VARCHAR(255) UNIQUE,
+    horas DECIMAL(2,1)
+);
+
+CREATE TABLE IF NOT EXISTS matricula(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT REFERENCES usuario(id),
+    idCurso INT REFERENCES curso(id),
+    fecha DATE,
+    horaInicio TIME,
+    estado VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS retiro(
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   idUsuario INT REFERENCES usuario(id),
+   idMatricula INT REFERENCES matricula(id),
+   fecha DATE
+);
+
+
